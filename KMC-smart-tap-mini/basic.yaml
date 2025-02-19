@@ -35,7 +35,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    password: "30407"
+    password: "00030407"
 
 captive_portal:
 
