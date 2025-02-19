@@ -18,10 +18,13 @@ logger:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret api_encryption_key
 
 ota:
   - platform: esphome
     id: ota_esphome
+    password: !secret ota_password
 
 wifi:
   id: wifi_id
@@ -29,9 +32,9 @@ wifi:
   password: !secret wifi_password
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
-  # 30407 is the model number of the KMC Smart Tap Mini
   ap:
-    password: "00030407"
+    ssid: "${friendly_name} Fallback"
+    password: ""
 
 captive_portal:
 
@@ -44,19 +47,19 @@ switch:
     id: outlet1
     name: ${outlet_1_name}
     pin: P26
-    restore_mode: ALWAYS_OFF
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: outlet2
     name: ${outlet_2_name}
     pin: P24
-    restore_mode: ALWAYS_OFF
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay3
     name: ${outlet_3_name}
     pin: P6
-    restore_mode: ALWAYS_OFF
+    restore_mode: RESTORE_DEFAULT_OFF
 
 sensor:
   - platform: wifi_signal
