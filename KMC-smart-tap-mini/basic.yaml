@@ -1,0 +1,95 @@
+substitutions:
+  name: kmc-smart-tap-mini
+  friendly_name: KMC Smart Tap Mini
+  outlet_1_name: "Outlet 1"
+  outlet_2_name: "Outlet 2"
+  outlet_3_name: "Outlet 3"
+
+esphome:
+  name: "${name}"
+  friendly_name: "${friendly_name}"
+  name_add_mac_suffix: true
+  project:
+    name: CryptkCoding.KMC Smart Tap Mini Basic
+    version: dev
+
+bk72xx:
+  board: cb2s
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    id: ota_esphome
+
+dashboard_import:
+  package_import_url: github://cryptk/esphome-configs/KMC-smart-tap-mini/basic.yaml
+  import_full_config: false
+
+wifi:
+  id: wifi_id
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    password: "30407"
+
+captive_portal:
+
+web_server:
+ port: 80
+ version: 3
+
+switch:
+  - platform: gpio
+    id: outlet1
+    name: ${outlet_1_name}
+    pin: P26
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    id: outlet2
+    name: ${outlet_2_name}
+    pin: P24
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    id: relay3
+    name: ${outlet_3_name}
+    pin: P6
+    restore_mode: ALWAYS_OFF
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: "Uptime"
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: RX1
+      mode: INPUT
+      inverted: True
+    name: "Button"
+  
+  - platform: status
+    name: "Status"
+
+status_led:
+  pin:
+    number: TX1
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+
+button:
+  - platform: restart
+    name: "Restart"
