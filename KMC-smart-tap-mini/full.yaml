@@ -35,6 +35,10 @@ wifi:
 
 captive_portal:
 
+web_server:
+ port: 80
+ version: 3
+
 switch:
   - platform: gpio
     id: outlet1
@@ -54,6 +58,14 @@ switch:
     pin: P6
     restore_mode: ALWAYS_OFF
 
+sensor:
+  - platform: wifi_signal
+    name: "WiFi signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: "Uptime"
+
 binary_sensor:
   - platform: gpio
     pin:
@@ -62,7 +74,19 @@ binary_sensor:
       inverted: True
     name: "Button"
   
+  - platform: status
+    name: "Status"
+
 status_led:
   pin:
     number: TX1
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+
+button:
+  - platform: restart
+    name: "Restart"
 
