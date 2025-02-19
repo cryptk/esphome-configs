@@ -9,6 +9,9 @@ esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
   name_add_mac_suffix: true
+  project:
+    name: CryptkCoding.KMC Smart Tap Mini Basic
+    version: dev
 
 bk72xx:
   board: cb2s
