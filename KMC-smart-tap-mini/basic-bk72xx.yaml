@@ -27,7 +27,7 @@ ota:
     id: ota_esphome
 
 dashboard_import:
-  package_import_url: github://cryptk/esphome-configs/KMC-smart-tap-mini/basic.yaml
+  package_import_url: github://cryptk/esphome-configs/KMC-smart-tap-mini/basic-bk72xx.yaml
   import_full_config: false
 
 wifi:
