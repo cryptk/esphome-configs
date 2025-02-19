@@ -46,19 +46,19 @@ web_server:
 switch:
   - platform: gpio
     id: outlet1
-    name: "${outlet_1_name}"
+    name: ${outlet_1_name}
     pin: P26
     restore_mode: ALWAYS_OFF
 
   - platform: gpio
     id: outlet2
-    name: "${outlet_2_name}"
+    name: ${outlet_2_name}
     pin: P24
     restore_mode: ALWAYS_OFF
 
   - platform: gpio
     id: relay3
-    name: "${outlet_3_name}"
+    name: ${outlet_3_name}
     pin: P6
     restore_mode: ALWAYS_OFF
 
