@@ -1,4 +1,4 @@
-substitution:
+substitutions:
   name: kmc-smart-tap-mini
   friendly_name: KMC Smart Tap Mini
   outlet_1_name: "Outlet 1"
