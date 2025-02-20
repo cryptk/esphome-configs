@@ -1,6 +1,6 @@
 substitutions:
-  name: "kmc-smart-tap-mini"
-  friendly_name: "KMC Smart Tap Mini"
+  name: "kmc-smart-tap-mini-1"
+  friendly_name: "KMC Smart Tap Mini 1"
   outlet_1_name: "Outlet 1"
   outlet_2_name: "Outlet 2"
   outlet_3_name: "Outlet 3"
@@ -8,13 +8,14 @@ substitutions:
 esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
-  name_add_mac_suffix: true
+  name_add_mac_suffix: false
 
 bk72xx:
   board: cb2s
 
 # Enable logging
 logger:
+  level: INFO
 
 # Enable Home Assistant API
 api:
@@ -56,7 +57,7 @@ switch:
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
-    id: relay3
+    id: outlet3
     name: ${outlet_3_name}
     pin: P6
     restore_mode: RESTORE_DEFAULT_OFF
@@ -66,30 +67,123 @@ sensor:
     name: "WiFi signal"
     update_interval: 60s
 
-  - platform: uptime
-    name: "Uptime"
-
 binary_sensor:
   - platform: gpio
+    id: top_button
     pin:
       number: RX1
       mode: INPUT
       inverted: True
     name: "Button"
-  
-  - platform: status
-    name: "Status"
+    on_release: 
+      then:
+        - light.turn_off: light_status
+        - if:
+            condition:
+              - lambda: 'return id(request_factory_reset);'
+            then:
+              - logger.log:
+                  format: "Performing factory reset"
+                  level: INFO
+              - delay: 250ms
+              - button.press: button_factory_reset
+        - if:
+            condition:
+              all:
+                - lambda: 'return id(request_restart);'
+                - lambda: 'return !id(request_factory_reset);'
+            then:
+              - logger.log:
+                  format: "Restarting"
+                  level: INFO
+              - delay: 250ms
+              - button.press: button_restart
+    on_multi_click: 
+      - timing:
+        - "ON for at most 1s"
+        - "OFF for at least 0.3s"
+        then:
+          - logger.log:
+              format: "Single clicked, toggling ${outlet_1_name}"
+              level: INFO
+          - switch.toggle: outlet1
+      - timing:
+        - "ON for at most 1s"
+        - "OFF for at most 0.3s"
+        - "ON for at most 1s"
+        - "OFF for at least 0.3s"
+        then:
+          - logger.log:
+              format: "Double clicked, toggling ${outlet_2_name}"
+              level: INFO
+          - switch.toggle: outlet2
+      - timing:
+        - "ON for at most 1s"
+        - "OFF for at most 0.3s"
+        - "ON for at most 1s"
+        - "OFF for at most 0.3s"
+        - "ON for at most 1s"
+        - "OFF for at least 0.3s"
+        then:
+          - logger.log:
+              format: "Triple clicked, toggling ${outlet_3_name}"
+              level: INFO
+          - switch.toggle: outlet3
+      - timing:
+        - "ON for at least 5s"
+        then:
+          - light.turn_on:
+              id: light_status
+              effect: "Slow Blink"
+          - globals.set: 
+              id: request_restart
+              value: "true"
+      - timing:
+        - "ON for at least 10s"
+        then:
+          - light.turn_on:
+              id: light_status
+              effect: "Fast Blink"
+          - globals.set: 
+              id: request_factory_reset
+              value: "true"
 
-status_led:
-  pin:
-    number: TX1
+globals:
+  - id: request_restart
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: request_factory_reset
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
-text_sensor:
-  - platform: version
-    name: "ESPHome Version"
-    hide_timestamp: true
+light:
+  - platform: status_led
+    id: light_status
+    name: "Status Light"
+    pin: TX1
+    effects:
+      - strobe:
+          name: "Slow Blink"
+          colors:
+            - state: true
+              duration: 250ms
+            - state: false
+              duration: 250ms
+      - strobe:
+          name: "Fast Blink"
+          colors:
+            - state: true
+              duration: 100ms
+            - state: false
+              duration: 100ms
 
 button:
   - platform: restart
+    id: button_restart
     name: "Restart"
-
+  
+  - platform: factory_reset
+    id: button_factory_reset
+    name: Factory Reset
